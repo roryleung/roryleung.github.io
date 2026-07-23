@@ -3,834 +3,164 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#111827" />
-  <title>Reward Bank</title>
+  <meta name="theme-color" content="#6d5dfc" />
+  <title>PhDone Reward Bank</title>
   <style>
-    :root {
-      --bg: #f5f7fb;
-      --card: #ffffff;
-      --text: #111827;
-      --muted: #6b7280;
-      --line: #e5e7eb;
-      --accent: #4f46e5;
-      --accent-soft: #eef2ff;
-      --good: #059669;
-      --danger: #dc2626;
-      --warning: #d97706;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-    .shell {
-      width: min(100%, 920px);
-      margin: 0 auto;
-      padding: 18px 14px 64px;
-    }
-    header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    h1 { margin: 0; font-size: 1.75rem; }
-    h2 { margin: 0 0 12px; font-size: 1.1rem; }
-    p { margin: 0; }
-    .muted { color: var(--muted); }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 14px;
-    }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 16px;
-      box-shadow: 0 4px 18px rgba(17,24,39,.04);
-    }
-    .span-4 { grid-column: span 4; }
-    .span-6 { grid-column: span 6; }
-    .span-8 { grid-column: span 8; }
-    .span-12 { grid-column: span 12; }
-    .kpi {
-      font-size: 1.9rem;
-      font-weight: 750;
-      margin-top: 4px;
-    }
-    .level-bar {
-      height: 12px;
-      background: #eceff5;
-      border-radius: 999px;
-      overflow: hidden;
-      margin-top: 12px;
-    }
-    .level-fill {
-      height: 100%;
-      background: var(--accent);
-      width: 0%;
-      transition: width .25s ease;
-    }
-    .row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .row.wrap { flex-wrap: wrap; }
-    input, select, button {
-      font: inherit;
-    }
-    input, select {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 11px 12px;
-      background: #fff;
-    }
-    button {
-      border: 0;
-      border-radius: 12px;
-      padding: 11px 14px;
-      cursor: pointer;
-      font-weight: 700;
-    }
-    .primary { background: var(--accent); color: white; }
-    .secondary { background: var(--accent-soft); color: var(--accent); }
-    .ghost { background: transparent; color: var(--muted); }
-    .danger { background: #fee2e2; color: var(--danger); }
-    .task, .habit, .purchase {
-      border-top: 1px solid var(--line);
-      padding: 12px 0;
-    }
-    .task:first-child, .habit:first-child, .purchase:first-child { border-top: 0; }
-    .task-title, .habit-title { font-weight: 700; }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      border-radius: 999px;
-      padding: 4px 8px;
-      font-size: .8rem;
-      background: var(--accent-soft);
-      color: var(--accent);
-      margin-right: 6px;
-      margin-top: 6px;
-    }
-    .success { color: var(--good); }
-    .warning { color: var(--warning); }
-    .empty {
-      color: var(--muted);
-      text-align: center;
-      padding: 18px 4px;
-    }
-    dialog {
-      border: 0;
-      border-radius: 18px;
-      padding: 0;
-      width: min(92vw, 520px);
-      box-shadow: 0 20px 60px rgba(0,0,0,.22);
-    }
-    dialog::backdrop { background: rgba(17,24,39,.45); }
-    .modal { padding: 18px; }
-    .modal-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin: 14px 0;
-    }
-    .modal-grid .full { grid-column: 1 / -1; }
-    .label { font-size: .82rem; color: var(--muted); margin-bottom: 5px; }
-    .top-actions { display:flex; gap:8px; flex-wrap:wrap; }
-    .small { font-size: .85rem; }
-    .right { margin-left:auto; }
-
-    .login-screen {
-      position: fixed;
-      inset: 0;
-      z-index: 1000;
-      display: grid;
-      place-items: center;
-      padding: 20px;
-      background: linear-gradient(160deg, #eef2ff 0%, #f8fafc 55%, #ffffff 100%);
-    }
-    .login-card {
-      width: min(100%, 420px);
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      padding: 24px;
-      box-shadow: 0 20px 60px rgba(17,24,39,.14);
-    }
-    .login-card h1 { margin-bottom: 8px; }
-    .login-card input { margin: 16px 0 10px; }
-    .login-error {
-      min-height: 22px;
-      color: var(--danger);
-      font-size: .9rem;
-      margin-bottom: 8px;
-    }
-    .hidden { display: none !important; }
-
-    @media (max-width: 720px) {
-      .span-4, .span-6, .span-8 { grid-column: span 12; }
-      .modal-grid { grid-template-columns: 1fr; }
-      .modal-grid .full { grid-column: auto; }
-      h1 { font-size: 1.5rem; }
-      .kpi { font-size: 1.55rem; }
-    }
+    :root{--bg:#f7f7fc;--card:#fff;--text:#172033;--muted:#667085;--line:#e6e8ef;--accent:#6d5dfc;--accent2:#9b6dff;--soft:#f0edff;--good:#079455;--danger:#d92d20;--warning:#dc6803;--gold:#f4b740;--shadow:0 8px 28px rgba(32,30,80,.07)}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(180deg,#f3f0ff 0,#f8f9fc 260px);color:var(--text)}
+    .shell{width:min(100%,1080px);margin:0 auto;padding:18px 14px 76px} header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px} h1{margin:0;font-size:1.75rem} h2{margin:0 0 12px;font-size:1.1rem} h3{margin:0;font-size:1rem} p{margin:0}.muted{color:var(--muted)}.small{font-size:.84rem}.tiny{font-size:.75rem}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow)}.span-3{grid-column:span 3}.span-4{grid-column:span 4}.span-5{grid-column:span 5}.span-6{grid-column:span 6}.span-7{grid-column:span 7}.span-8{grid-column:span 8}.span-12{grid-column:span 12}
+    .kpi{font-size:1.8rem;font-weight:850;margin-top:4px}.row{display:flex;gap:10px;align-items:center}.row.wrap{flex-wrap:wrap}.right{margin-left:auto}.top-actions{display:flex;gap:8px;flex-wrap:wrap}input,select,button{font:inherit}input,select{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:#fff}button{border:0;border-radius:12px;padding:11px 14px;cursor:pointer;font-weight:750}button:disabled{opacity:.5;cursor:not-allowed}.primary{background:var(--accent);color:#fff}.secondary{background:var(--soft);color:var(--accent)}.ghost{background:transparent;color:var(--muted)}.danger{background:#fee4e2;color:var(--danger)}.success-btn{background:#dcfae6;color:#067647}.gold-btn{background:#fff3cd;color:#8a5b00}
+    .hero{background:linear-gradient(135deg,#322a84,#6846dd 58%,#9a65f5);color:#fff;border:0;overflow:hidden;position:relative}.hero:after{content:"🎲";position:absolute;right:18px;bottom:-18px;font-size:7rem;opacity:.09;transform:rotate(-12deg)}.hero .muted{color:#e7e1ff}.bar{height:12px;background:#eceff5;border-radius:999px;overflow:hidden;margin-top:10px}.fill{height:100%;background:linear-gradient(90deg,#7868ff,#b67cff);width:0%;transition:width .3s}.hero .bar{background:rgba(255,255,255,.2)}.hero .fill{background:linear-gradient(90deg,#ffe694,#ffc857)}
+    .pill{display:inline-flex;align-items:center;border-radius:999px;padding:4px 8px;font-size:.78rem;background:var(--soft);color:var(--accent);margin:6px 5px 0 0}.pill.neutral{background:#f2f4f7;color:#475467}.pill.good{background:#dcfae6;color:#067647}.pill.gold{background:#fff3cd;color:#8a5b00}.success{color:var(--good)}.warning{color:var(--warning)}.empty{color:var(--muted);text-align:center;padding:20px 4px}.task,.habit,.purchase,.quest{border-top:1px solid var(--line);padding:13px 0}.task:first-child,.habit:first-child,.purchase:first-child,.quest:first-child{border-top:0}.item-title{font-weight:780}
+    .quest-card{border:1px solid var(--line);border-radius:16px;padding:13px;margin-top:10px;background:linear-gradient(180deg,#fff,#fbfaff)}.quest-card.done{border-color:#a6f4c5;background:#f6fef9}.quest-icon{font-size:1.7rem}.quest-reward{font-weight:800;color:var(--accent)}.rank-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px}.rank-step{border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:10px;text-align:center;background:rgba(255,255,255,.08)}.rank-step.reached{background:rgba(255,255,255,.2);border-color:#ffe694}.rank-step.claimed{box-shadow:inset 0 0 0 2px rgba(166,244,197,.8)}.rank-emoji{font-size:1.45rem}
+    .mystery{background:linear-gradient(135deg,#fff9e6,#fff,#f7efff);border:1px solid #f7d774}.box-count{font-size:2rem;font-weight:900}.pulse{animation:pulse 1.5s infinite}@keyframes pulse{50%{transform:scale(1.035)}}
+    .roadmap{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}.tile{border:1px solid var(--line);border-radius:15px;padding:12px;background:#fff}.tile.current{border-color:var(--accent);box-shadow:0 0 0 3px var(--soft)}.tile.locked{opacity:.67}.toggle-row{display:flex;align-items:center;gap:8px}.toggle-row input{width:auto}.info-box{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:14px;padding:12px;line-height:1.5}.notice{margin-top:12px;border-radius:14px;padding:11px;background:#fff8e1;border:1px solid #f7d774;color:#7a4f00}
+    dialog{border:0;border-radius:20px;padding:0;width:min(92vw,580px);box-shadow:0 24px 70px rgba(0,0,0,.25)}dialog::backdrop{background:rgba(17,24,39,.5)}.modal{padding:20px}.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.modal-grid .full{grid-column:1/-1}.label{font-size:.82rem;color:var(--muted);margin-bottom:5px}.login-screen{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:20px;background:linear-gradient(160deg,#e9e3ff,#f8fafc 55%,#fff)}.login-card{width:min(100%,420px);background:#fff;border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 22px 70px rgba(30,23,90,.15)}.login-card input{margin:16px 0 10px}.login-error{min-height:22px;color:var(--danger);font-size:.9rem;margin-bottom:8px}.hidden{display:none!important}
+    .confetti{position:fixed;inset:0;pointer-events:none;z-index:3000;overflow:hidden}.confetti span{position:absolute;top:-30px;font-size:1.4rem;animation:fall 1.8s linear forwards}@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.2}}
+    @media(max-width:800px){.span-3,.span-4,.span-5,.span-6,.span-7,.span-8{grid-column:span 12}.modal-grid{grid-template-columns:1fr}.modal-grid .full{grid-column:auto}.roadmap{grid-template-columns:repeat(2,1fr)}.rank-strip{grid-template-columns:repeat(2,1fr)}h1{font-size:1.5rem}.kpi{font-size:1.55rem}header{flex-direction:column}.top-actions{width:100%}.top-actions button{flex:1}}
   </style>
 </head>
 <body>
-  <section id="loginScreen" class="login-screen">
-    <form id="loginForm" class="login-card">
-      <h1>PhDone</h1>
-      <p class="muted">Sign in to open your synced reward bank.</p>
-      <input
-        id="loginEmail"
-        type="email"
-        autocomplete="email"
-        placeholder="Email address"
-        required
-      />
-      <input
-        id="loginPassword"
-        type="password"
-        autocomplete="current-password"
-        placeholder="Password"
-        required
-      />
-      <div id="loginError" class="login-error" aria-live="polite"></div>
-      <button id="loginButton" class="primary" style="width:100%">Sign in</button>
-      <p class="muted small" style="margin-top:14px">
-        Your account and data are handled by Supabase.
-      </p>
-    </form>
-  </section>
-
-  <div id="appShell" class="shell hidden">
-    <header>
-      <div>
-        <h1>Reward Bank</h1>
-        <p class="muted">Turn completed work and steady habits into guilt-free treats.</p>
-        <p id="syncStatus" class="muted small" style="margin-top:4px">Connecting...</p>
-      </div>
-      <div class="top-actions">
-        <button class="secondary" onclick="openTaskDialog()">+ Task</button>
-        <button class="secondary" onclick="openHabitDialog()">+ Habit</button>
-        <button class="secondary" onclick="openPurchaseDialog()">Spend</button>
-        <button class="ghost" onclick="logout()">Log out</button>
-      </div>
-    </header>
-
-    <section class="grid">
-      <div class="card span-4">
-        <div class="muted small">Available balance</div>
-        <div class="kpi" id="balance">£0.00</div>
-      </div>
-      <div class="card span-4">
-        <div class="muted small">Lifetime productivity</div>
-        <div class="kpi" id="xp">0 XP</div>
-      </div>
-      <div class="card span-4">
-        <div class="muted small">Current level</div>
-        <div class="kpi" id="levelName">Bronze</div>
-      </div>
-
-      <div class="card span-12">
-        <div class="row">
-          <div>
-            <div class="muted small" id="levelProgressText">0 XP to Silver</div>
-          </div>
-          <div class="right muted small" id="levelRange"></div>
-        </div>
-        <div class="level-bar"><div class="level-fill" id="levelFill"></div></div>
-      </div>
-
-      <div class="card span-8">
-        <div class="row">
-          <h2>Tasks</h2>
-          <button class="ghost right" onclick="openTaskDialog()">Add</button>
-        </div>
-        <div id="taskList"></div>
-      </div>
-
-      <div class="card span-4">
-        <div class="row">
-          <h2>Habit achievements</h2>
-          <button class="ghost right" onclick="openHabitDialog()">Add</button>
-        </div>
-        <div id="habitList"></div>
-      </div>
-
-      <div class="card span-6">
-        <div class="row">
-          <h2>Recent spending</h2>
-          <button class="ghost right" onclick="openPurchaseDialog()">Add</button>
-        </div>
-        <div id="purchaseList"></div>
-      </div>
-
-      <div class="card span-6">
-        <h2>Settings</h2>
-        <div class="modal-grid">
-          <div>
-            <div class="label">Default reward per hour (£)</div>
-            <input id="hourlyRate" type="number" min="0" step="0.25" onchange="saveSettings()" />
-          </div>
-          <div>
-            <div class="label">Income bonus</div>
-            <input id="incomeBonus" type="number" min="0" step="0.5" onchange="saveSettings()" />
-          </div>
-          <div class="full">
-            <div class="label">Income bonus is a percentage, e.g. 2 means 2%.</div>
-          </div>
-        </div>
-        <div class="row wrap">
-          <button class="secondary" onclick="exportData()">Export backup</button>
-          <label class="secondary" style="padding:11px 14px;border-radius:12px;font-weight:700;cursor:pointer;">
-            Import backup
-            <input type="file" accept="application/json" onchange="importData(event)" style="display:none;">
-          </label>
-          <button class="danger" onclick="resetAll()">Reset all</button>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <dialog id="taskDialog">
-    <form method="dialog" class="modal" onsubmit="addTask(event)">
-      <h2>Add task</h2>
-      <div class="modal-grid">
-        <div class="full">
-          <div class="label">Task</div>
-          <input id="taskName" required placeholder="e.g. Write thesis section" />
-        </div>
-        <div>
-          <div class="label">Estimated hours</div>
-          <input id="taskHours" type="number" min="0.25" step="0.25" inputmode="decimal" required oninput="suggestTaskReward()" />
-        </div>
-        <div>
-          <div class="label">Expected reward (£)</div>
-          <input id="taskReward" type="number" min="0" step="0.25" required />
-        </div>
-        <div class="full">
-          <div class="label">Income generated (£, optional)</div>
-          <input id="taskIncome" type="number" min="0" step="0.01" value="0" />
-        </div>
-      </div>
-      <div class="row">
-        <button type="button" class="ghost" onclick="taskDialog.close()">Cancel</button>
-        <button class="primary right">Add task</button>
-      </div>
-    </form>
-  </dialog>
-
-  <dialog id="habitDialog">
-    <form method="dialog" class="modal" onsubmit="addHabit(event)">
-      <h2>Add habit achievement</h2>
-      <div class="modal-grid">
-        <div class="full">
-          <div class="label">Habit</div>
-          <input id="habitName" required placeholder="e.g. Gym" />
-        </div>
-        <div>
-          <div class="label">Target count</div>
-          <input id="habitTarget" type="number" min="1" step="1" required value="7" />
-        </div>
-        <div>
-          <div class="label">Within how many days?</div>
-          <input id="habitDays" type="number" min="1" step="1" required value="14" />
-        </div>
-        <div class="full">
-          <div class="label">Achievement bonus (£)</div>
-          <input id="habitReward" type="number" min="0" step="0.25" required value="5" />
-        </div>
-      </div>
-      <div class="row">
-        <button type="button" class="ghost" onclick="habitDialog.close()">Cancel</button>
-        <button class="primary right">Add habit</button>
-      </div>
-    </form>
-  </dialog>
-
-  <dialog id="purchaseDialog">
-    <form method="dialog" class="modal" onsubmit="addPurchase(event)">
-      <h2>Add reward purchase</h2>
-      <div class="modal-grid">
-        <div class="full">
-          <div class="label">Purchase</div>
-          <input id="purchaseName" required placeholder="e.g. Trainers" />
-        </div>
-        <div class="full">
-          <div class="label">Amount (£)</div>
-          <input id="purchaseAmount" type="number" min="0.01" step="0.01" required />
-        </div>
-      </div>
-      <div class="row">
-        <button type="button" class="ghost" onclick="purchaseDialog.close()">Cancel</button>
-        <button class="primary right">Add purchase</button>
-      </div>
-    </form>
-  </dialog>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    // -----------------------------------------------------------------
-    // SUPABASE CONFIGURATION
-    // Find these in Supabase: Project Settings -> API.
-    // Use the Project URL and the publishable key (or legacy anon key).
-    // NEVER put a service_role or secret key in this file.
-    // -----------------------------------------------------------------
-    const SUPABASE_URL = "https://yivkvurydsjseogylaxj.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_xbK07GsS3Mq1CEd4TKbWGA_L5kUBERR";
-
-    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true
-      }
-    });
-
-    const defaultData = {
-      settings: { hourlyRate: 3, incomeBonus: 2 },
-      tasks: [],
-      habits: [],
-      purchases: []
-    };
-
-    let data = structuredClone(defaultData);
-    let currentUser = null;
-    let saveTimer = null;
-    let saveInProgress = false;
-    let saveQueued = false;
-
-    const loginForm = document.getElementById("loginForm");
-    const loginButton = document.getElementById("loginButton");
-    const loginError = document.getElementById("loginError");
-
-    loginForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      loginError.textContent = "";
-      loginButton.disabled = true;
-      loginButton.textContent = "Signing in...";
-
-      const email = document.getElementById("loginEmail").value.trim();
-      const password = document.getElementById("loginPassword").value;
-
-      const { error } = await client.auth.signInWithPassword({ email, password });
-
-      if (error) {
-        loginError.textContent = "The email address or password is incorrect.";
-        console.error(error);
-      }
-
-      loginButton.disabled = false;
-      loginButton.textContent = "Sign in";
-    });
-
-    async function logout() {
-      setSyncStatus("Signing out...");
-      const { error } = await client.auth.signOut();
-      if (error) {
-        alert("Could not sign out. Please try again.");
-        console.error(error);
-      }
-    }
-
-    function showLogin() {
-      document.getElementById("appShell").classList.add("hidden");
-      document.getElementById("loginScreen").classList.remove("hidden");
-      document.getElementById("loginPassword").value = "";
-      document.getElementById("loginEmail").focus();
-    }
-
-    function showApp() {
-      document.getElementById("loginScreen").classList.add("hidden");
-      document.getElementById("appShell").classList.remove("hidden");
-    }
-
-    function setSyncStatus(message, isError = false) {
-      const el = document.getElementById("syncStatus");
-      if (!el) return;
-      el.textContent = message;
-      el.style.color = isError ? "var(--danger)" : "";
-    }
-
-    async function loadFromSupabase() {
-      if (!currentUser) return;
-      setSyncStatus("Loading synced data...");
-
-      const { data: row, error } = await client
-        .from("reward_bank")
-        .select("data")
-        .eq("user_id", currentUser.id)
-        .maybeSingle();
-
-      if (error) {
-        setSyncStatus("Could not load data", true);
-        console.error(error);
-        alert("Your reward bank could not be loaded. Check the Supabase setup and internet connection.");
-        return;
-      }
-
-      if (row?.data) {
-        data = normalizeData(row.data);
-      } else {
-        data = structuredClone(defaultData);
-        await saveNow();
-      }
-
-      render();
-      setSyncStatus("Synced");
-    }
-
-    function normalizeData(value) {
-      return {
-        settings: {
-          hourlyRate: Number(value?.settings?.hourlyRate ?? 3),
-          incomeBonus: Number(value?.settings?.incomeBonus ?? 2)
-        },
-        tasks: Array.isArray(value?.tasks) ? value.tasks : [],
-        habits: Array.isArray(value?.habits) ? value.habits : [],
-        purchases: Array.isArray(value?.purchases) ? value.purchases : []
-      };
-    }
-
-    function save() {
-      render();
-      setSyncStatus("Saving...");
-      clearTimeout(saveTimer);
-      saveTimer = setTimeout(saveNow, 250);
-    }
-
-    async function saveNow() {
-      if (!currentUser) return;
-      if (saveInProgress) {
-        saveQueued = true;
-        return;
-      }
-
-      saveInProgress = true;
-      saveQueued = false;
-
-      const { error } = await client
-        .from("reward_bank")
-        .upsert({
-          user_id: currentUser.id,
-          data,
-          updated_at: new Date().toISOString()
-        }, { onConflict: "user_id" });
-
-      saveInProgress = false;
-
-      if (error) {
-        setSyncStatus("Changes not saved", true);
-        console.error(error);
-      } else {
-        setSyncStatus("Synced");
-      }
-
-      if (saveQueued) await saveNow();
-    }
-
-    function money(n) {
-      return new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(n || 0);
-    }
-
-    function levels() {
-      return [
-        { name: "Bronze", min: 0, max: 50 },
-        { name: "Silver", min: 50, max: 150 },
-        { name: "Gold", min: 150, max: 300 },
-        { name: "Platinum", min: 300, max: 600 },
-        { name: "Diamond", min: 600, max: 1000 },
-        { name: "Master", min: 1000, max: Infinity }
-      ];
-    }
-
-    function totals() {
-      const completed = data.tasks.filter(t => t.done);
-      const taskEarned = completed.reduce((sum, t) => sum + Number(t.reward || 0) + (Number(t.income || 0) * data.settings.incomeBonus / 100), 0);
-      const habitEarned = data.habits.reduce((sum, h) => sum + (h.claimed ? Number(h.reward || 0) : 0), 0);
-      const spent = data.purchases.reduce((sum, p) => sum + Number(p.amount || 0), 0);
-      const xp = Math.round((taskEarned + habitEarned) * 10);
-      return { taskEarned, habitEarned, spent, balance: taskEarned + habitEarned - spent, xp };
-    }
-
-    function render() {
-      const t = totals();
-      document.getElementById("balance").textContent = money(t.balance);
-      document.getElementById("xp").textContent = `${t.xp} XP`;
-
-      const lvl = levels().find(l => t.xp >= l.min && t.xp < l.max) || levels().at(-1);
-      document.getElementById("levelName").textContent = lvl.name;
-      if (lvl.max === Infinity) {
-        document.getElementById("levelProgressText").textContent = "Highest level reached";
-        document.getElementById("levelRange").textContent = `${lvl.min}+ XP`;
-        document.getElementById("levelFill").style.width = "100%";
-      } else {
-        const pct = ((t.xp - lvl.min) / (lvl.max - lvl.min)) * 100;
-        const next = levels()[levels().indexOf(lvl) + 1];
-        document.getElementById("levelProgressText").textContent = `${lvl.max - t.xp} XP to ${next.name}`;
-        document.getElementById("levelRange").textContent = `${lvl.min}–${lvl.max} XP`;
-        document.getElementById("levelFill").style.width = `${Math.max(0, Math.min(100, pct))}%`;
-      }
-
-      document.getElementById("hourlyRate").value = data.settings.hourlyRate;
-      document.getElementById("incomeBonus").value = data.settings.incomeBonus;
-      renderTasks();
-      renderHabits();
-      renderPurchases();
-    }
-
-    function renderTasks() {
-      const el = document.getElementById("taskList");
-      if (!data.tasks.length) {
-        el.innerHTML = '<div class="empty">No tasks yet.</div>';
-        return;
-      }
-      el.innerHTML = data.tasks.map((t, i) => {
-        const bonus = Number(t.income || 0) * data.settings.incomeBonus / 100;
-        return `
-          <div class="task">
-            <div class="row">
-              <div>
-                <div class="task-title">${escapeHtml(t.name)}</div>
-                <span class="pill">${t.hours} h</span>
-                <span class="pill">${money(t.reward)} reward</span>
-                ${bonus > 0 ? `<span class="pill">+ ${money(bonus)} income bonus</span>` : ""}
-              </div>
-              <button class="${t.done ? "secondary" : "primary"} right" onclick="toggleTask(${i})">
-                ${t.done ? "Completed" : "Complete"}
-              </button>
-            </div>
-            <div class="row">
-              <button class="ghost small" onclick="editTaskReward(${i})">Edit reward</button>
-              <button class="ghost small" onclick="deleteTask(${i})">Delete</button>
-            </div>
-          </div>`;
-      }).join("");
-    }
-
-    function renderHabits() {
-      const el = document.getElementById("habitList");
-      if (!data.habits.length) {
-        el.innerHTML = '<div class="empty">No habits yet.</div>';
-        return;
-      }
-      el.innerHTML = data.habits.map((h, i) => `
-        <div class="habit">
-          <div class="habit-title">${escapeHtml(h.name)}</div>
-          <div class="muted small">${h.count}/${h.target} within ${h.days} days</div>
-          <div class="level-bar"><div class="level-fill" style="width:${Math.min(100, h.count / h.target * 100)}%"></div></div>
-          <div class="row" style="margin-top:10px">
-            <button class="secondary" onclick="incrementHabit(${i})" ${h.claimed ? "disabled" : ""}>+1</button>
-            ${h.count >= h.target && !h.claimed
-              ? `<button class="primary" onclick="claimHabit(${i})">Claim ${money(h.reward)}</button>`
-              : h.claimed
-              ? `<span class="success small">Achievement claimed</span>`
-              : `<span class="muted small">${money(h.reward)} at target</span>`}
-            <button class="ghost right" onclick="deleteHabit(${i})">Delete</button>
-          </div>
-        </div>
-      `).join("");
-    }
-
-    function renderPurchases() {
-      const el = document.getElementById("purchaseList");
-      if (!data.purchases.length) {
-        el.innerHTML = '<div class="empty">No reward purchases yet.</div>';
-        return;
-      }
-      el.innerHTML = data.purchases.slice().reverse().map((p, reverseIndex) => {
-        const i = data.purchases.length - 1 - reverseIndex;
-        return `
-          <div class="purchase row">
-            <div>
-              <div class="task-title">${escapeHtml(p.name)}</div>
-              <div class="muted small">${new Date(p.date).toLocaleDateString("en-GB")}</div>
-            </div>
-            <div class="right">${money(p.amount)}</div>
-            <button class="ghost" onclick="deletePurchase(${i})">Delete</button>
-          </div>`;
-      }).join("");
-    }
-
-    function openTaskDialog() {
-      taskName.value = "";
-      taskHours.value = "1";
-      taskIncome.value = "0";
-      suggestTaskReward();
-      taskDialog.showModal();
-    }
-
-    function suggestTaskReward() {
-      const hours = Number(taskHours.value || 0);
-      taskReward.value = (hours * data.settings.hourlyRate).toFixed(2);
-    }
-
-    function addTask(event) {
-      event.preventDefault();
-      data.tasks.unshift({
-        name: taskName.value.trim(),
-        hours: Number(taskHours.value),
-        reward: Number(taskReward.value),
-        income: Number(taskIncome.value || 0),
-        done: false,
-        created: new Date().toISOString()
-      });
-      taskDialog.close();
-      save();
-    }
-
-    function toggleTask(i) {
-      data.tasks[i].done = !data.tasks[i].done;
-      save();
-    }
-
-    function editTaskReward(i) {
-      const value = prompt("Expected reward (£):", data.tasks[i].reward);
-      if (value !== null && !isNaN(Number(value))) {
-        data.tasks[i].reward = Math.max(0, Number(value));
-        save();
-      }
-    }
-
-    function deleteTask(i) {
-      if (confirm("Delete this task?")) {
-        data.tasks.splice(i, 1);
-        save();
-      }
-    }
-
-    function openHabitDialog() {
-      habitName.value = "";
-      habitTarget.value = "7";
-      habitDays.value = "14";
-      habitReward.value = "5";
-      habitDialog.showModal();
-    }
-
-    function addHabit(event) {
-      event.preventDefault();
-      data.habits.push({
-        name: habitName.value.trim(),
-        target: Number(habitTarget.value),
-        days: Number(habitDays.value),
-        reward: Number(habitReward.value),
-        count: 0,
-        claimed: false,
-        started: new Date().toISOString()
-      });
-      habitDialog.close();
-      save();
-    }
-
-    function incrementHabit(i) {
-      const h = data.habits[i];
-      if (!h.claimed) h.count = Math.min(h.target, h.count + 1);
-      save();
-    }
-
-    function claimHabit(i) {
-      const h = data.habits[i];
-      if (h.count >= h.target && !h.claimed) {
-        h.claimed = true;
-        save();
-      }
-    }
-
-    function deleteHabit(i) {
-      if (confirm("Delete this habit?")) {
-        data.habits.splice(i, 1);
-        save();
-      }
-    }
-
-    function openPurchaseDialog() {
-      purchaseName.value = "";
-      purchaseAmount.value = "";
-      purchaseDialog.showModal();
-    }
-
-    function addPurchase(event) {
-      event.preventDefault();
-      data.purchases.push({
-        name: purchaseName.value.trim(),
-        amount: Number(purchaseAmount.value),
-        date: new Date().toISOString()
-      });
-      purchaseDialog.close();
-      save();
-    }
-
-    function deletePurchase(i) {
-      if (confirm("Delete this purchase?")) {
-        data.purchases.splice(i, 1);
-        save();
-      }
-    }
-
-    function saveSettings() {
-      data.settings.hourlyRate = Math.max(0, Number(hourlyRate.value || 0));
-      data.settings.incomeBonus = Math.max(0, Number(incomeBonus.value || 0));
-      save();
-    }
-
-    function exportData() {
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "phdone-reward-bank-backup.json";
-      a.click();
-      URL.revokeObjectURL(a.href);
-    }
-
-    function importData(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          data = normalizeData(JSON.parse(reader.result));
-          save();
-          alert("Backup imported and synced.");
-        } catch {
-          alert("That file could not be imported.");
-        }
-      };
-      reader.readAsText(file);
-      event.target.value = "";
-    }
-
-    function resetAll() {
-      if (confirm("Reset all tasks, habits and purchases?")) {
-        data = structuredClone(defaultData);
-        save();
-      }
-    }
-
-    function escapeHtml(str) {
-      return String(str).replace(/[&<>"']/g, c => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
-      })[c]);
-    }
-
-    client.auth.onAuthStateChange(async (event, session) => {
-      currentUser = session?.user ?? null;
-
-      if (currentUser) {
-        showApp();
-        await loadFromSupabase();
-      } else {
-        data = structuredClone(defaultData);
-        showLogin();
-      }
-    });
-  </script>
-</body>
-</html>
+<section id="loginScreen" class="login-screen"><form id="loginForm" class="login-card"><h1>🎓 PhDone</h1><p class="muted">Sign in to your synced productivity game.</p><input id="loginEmail" type="email" autocomplete="email" placeholder="Email address" required><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password" required><div id="loginError" class="login-error" aria-live="polite"></div><button id="loginButton" class="primary" style="width:100%">🔓 Sign in</button><p class="muted small" style="margin-top:14px">Your account and data are handled by Supabase.</p></form></section>
+
+<div id="appShell" class="shell hidden">
+<header><div><h1>🎓 PhDone Reward Bank</h1><p class="muted">A productivity game with fresh goals, guaranteed rewards and a little luck. ✨</p><p id="syncStatus" class="muted small" style="margin-top:4px">Connecting...</p></div><div class="top-actions"><button class="secondary" onclick="openTaskDialog()">➕ Task</button><button class="secondary" onclick="openHabitDialog()">🔁 Habit</button><button class="secondary" onclick="openPurchaseDialog()">🛍️ Spend</button><button class="ghost" onclick="logout()">🚪 Log out</button></div></header>
+
+<section class="grid">
+<div class="card span-3"><div class="muted small">💰 Available balance</div><div class="kpi" id="balance">£0.00</div></div>
+<div class="card span-3"><div class="muted small">🔥 This week's XP</div><div class="kpi" id="weeklyXpKpi">0 XP</div></div>
+<div class="card span-3"><div class="muted small">🎁 Mystery boxes</div><div class="kpi" id="boxKpi">0</div></div>
+<div class="card span-3"><div class="muted small">🏆 Lifetime level</div><div class="kpi" id="levelName">🥉 Bronze</div></div>
+
+<div class="card span-12 hero">
+ <div class="row"><div><div class="muted small">Renewable weekly adventure</div><h2 id="weeklyRankTitle" style="font-size:1.4rem;margin:3px 0 0">🌱 Getting Started</h2></div><button class="secondary right" onclick="gameInfoDialog.showModal()">❓ How the game works</button></div>
+ <div class="row" style="margin-top:10px"><div id="weeklyProgressText" class="muted small">Start earning XP</div><div id="weekDates" class="right muted small"></div></div>
+ <div class="bar"><div class="fill" id="weeklyFill"></div></div><div id="weeklyClaimNotice"></div><div id="weeklyRankStrip" class="rank-strip"></div>
+</div>
+
+<div class="card span-8"><div class="row"><h2>🎲 Today's quests</h2><span id="questDate" class="right muted small"></span></div><p class="muted small">Three rotating bonuses. Your ordinary task reward is always guaranteed.</p><div id="dailyQuestList"></div></div>
+<div class="card span-4 mystery"><h2>🎁 Mystery box</h2><div class="row"><div class="box-count" id="boxCount">0</div><div class="muted">boxes ready</div></div><p class="muted small" style="margin:8px 0 12px">Every box wins something: XP, money or a rare jackpot.</p><button id="openBoxButton" class="gold-btn pulse" style="width:100%" onclick="openMysteryBox()">✨ Open a box</button><div id="lastBoxResult" class="notice hidden"></div></div>
+
+<div class="card span-12"><div class="row"><h2>🗺️ Weekly challenge</h2><span id="weeklyQuestDates" class="right muted small"></span></div><div id="weeklyQuestCard"></div></div>
+
+<div class="card span-7"><div class="row"><h2>📝 Tasks</h2><button class="ghost right" onclick="openTaskDialog()">Add</button></div><div class="toggle-row small muted" style="margin-bottom:6px"><input id="showCompleted" type="checkbox" onchange="renderTasks()"><label for="showCompleted" id="showCompletedLabel">Show completed tasks</label></div><div id="taskList"></div></div>
+<div class="card span-5"><div class="row"><h2>🔁 Habit achievements</h2><button class="ghost right" onclick="openHabitDialog()">Add</button></div><div id="habitList"></div></div>
+
+<div class="card span-12"><div class="row"><h2>🏛️ Lifetime milestones</h2><button class="ghost right" onclick="lifetimeInfoDialog.showModal()">About these</button></div><p class="muted small">A background record of your total progress—not your main daily target.</p><div id="levelRoadmap" class="roadmap"></div></div>
+
+<div class="card span-6"><div class="row"><h2>🛍️ Recent spending</h2><button class="ghost right" onclick="openPurchaseDialog()">Add</button></div><div id="purchaseList"></div></div>
+<div class="card span-6"><h2>⚙️ Settings & backup</h2><div class="modal-grid"><div><div class="label">Default reward per hour (£)</div><input id="hourlyRate" type="number" min="0" step="0.25" onchange="saveSettings()"></div><div><div class="label">Income bonus (%)</div><input id="incomeBonus" type="number" min="0" step="0.5" onchange="saveSettings()"></div></div><div class="row wrap"><button class="secondary" onclick="exportData()">📤 Export backup</button><label class="secondary" style="padding:11px 14px;border-radius:12px;font-weight:750;cursor:pointer">📥 Import backup<input type="file" accept="application/json" onchange="importData(event)" style="display:none"></label><button class="danger" onclick="resetAll()">🗑️ Reset all</button></div></div>
+</section></div>
+
+<dialog id="taskDialog"><form method="dialog" class="modal" onsubmit="addTask(event)"><h2>➕ Add task</h2><div class="modal-grid"><div class="full"><div class="label">Task</div><input id="taskName" required placeholder="e.g. Write thesis section"></div><div><div class="label">Date</div><input id="taskDate" type="date" required></div><div><div class="label">Category</div><select id="taskCategory"><option value="work">💼 Work / study</option><option value="health">🏃 Health</option><option value="home">🧹 Home</option><option value="personal">🌱 Personal</option></select></div><div><div class="label">Estimated hours</div><input id="taskHours" type="number" min="0.25" step="0.25" inputmode="decimal" required oninput="suggestTaskReward()"></div><div><div class="label">Expected reward (£)</div><input id="taskReward" type="number" min="0" step="0.25" required></div><div class="full"><div class="label">Income generated (£, optional)</div><input id="taskIncome" type="number" min="0" step="0.01" value="0"></div></div><div class="row"><button type="button" class="ghost" onclick="taskDialog.close()">Cancel</button><button class="primary right">Add task</button></div></form></dialog>
+<dialog id="habitDialog"><form method="dialog" class="modal" onsubmit="addHabit(event)"><h2>🔁 Add habit achievement</h2><div class="modal-grid"><div class="full"><div class="label">Habit</div><input id="habitName" required placeholder="e.g. Gym"></div><div><div class="label">Category</div><select id="habitCategory"><option value="health">🏃 Health</option><option value="home">🧹 Home</option><option value="work">💼 Work / study</option><option value="personal">🌱 Personal</option></select></div><div><div class="label">Start date</div><input id="habitStartDate" type="date" required></div><div><div class="label">Target count</div><input id="habitTarget" type="number" min="1" step="1" required value="7"></div><div><div class="label">Within how many days?</div><input id="habitDays" type="number" min="1" step="1" required value="14"></div><div class="full"><div class="label">Achievement bonus (£)</div><input id="habitReward" type="number" min="0" step="0.25" required value="5"></div></div><div class="row"><button type="button" class="ghost" onclick="habitDialog.close()">Cancel</button><button class="primary right">Add habit</button></div></form></dialog>
+<dialog id="purchaseDialog"><form method="dialog" class="modal" onsubmit="addPurchase(event)"><h2>🛍️ Add reward purchase</h2><div class="modal-grid"><div class="full"><div class="label">Purchase</div><input id="purchaseName" required placeholder="e.g. Trainers"></div><div><div class="label">Date</div><input id="purchaseDate" type="date" required></div><div><div class="label">Amount (£)</div><input id="purchaseAmount" type="number" min="0.01" step="0.01" required></div></div><div class="row"><button type="button" class="ghost" onclick="purchaseDialog.close()">Cancel</button><button class="primary right">Add purchase</button></div></form></dialog>
+
+<dialog id="gameInfoDialog"><div class="modal"><h2>🎮 How PhDone works</h2><div class="info-box"><p><strong>💷 Guaranteed rewards:</strong> Completing a task always adds the reward you chose beforehand. Randomness only affects optional bonuses.</p><p style="margin-top:9px"><strong>🔥 Weekly ranks:</strong> Weekly XP resets every Monday, keeping the next goal close. Each rank has a one-time claimable reward for that week.</p><p style="margin-top:9px"><strong>🎲 Daily quests:</strong> Three quests rotate each day. Finish and claim them for XP, money or mystery boxes.</p><p style="margin-top:9px"><strong>🗺️ Weekly challenge:</strong> A larger goal refreshes each Monday and gives a mixed reward.</p><p style="margin-top:9px"><strong>🎁 Mystery boxes:</strong> Every box wins something. Results never remove money or XP.</p><p style="margin-top:9px"><strong>🏛️ Lifetime milestones:</strong> These remain as a quiet record of long-term progress, not an ever-receding main target.</p></div><div class="row" style="margin-top:14px"><button class="primary right" onclick="gameInfoDialog.close()">Let's play ✨</button></div></div></dialog>
+<dialog id="lifetimeInfoDialog"><div class="modal"><h2>🏛️ Lifetime milestones</h2><div class="info-box"><p>Your lifetime XP never resets. It records everything you have earned through completed tasks, claimed habits and bonus XP.</p><p style="margin-top:9px">Milestone bonuses are claimable once. They add spending money but do not create more XP, so they cannot trigger a chain of automatic level-ups.</p><p style="margin-top:9px">The weekly rank is the main game. Lifetime levels are simply a scrapbook of sustained progress.</p></div><div class="row" style="margin-top:14px"><button class="primary right" onclick="lifetimeInfoDialog.close()">Got it</button></div></div></dialog>
+<dialog id="boxDialog"><div class="modal" style="text-align:center"><div style="font-size:4rem">🎁</div><h2 id="boxDialogTitle">Mystery reward</h2><p id="boxDialogText" style="font-size:1.2rem;font-weight:800;margin:12px 0"></p><button class="primary" onclick="boxDialog.close()">Nice! ✨</button></div></dialog>
+<div id="confetti" class="confetti"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://yivkvurydsjseogylaxj.supabase.co";
+const SUPABASE_KEY = "sb_publishable_xbK07GsS3Mq1CEd4TKbWGA_L5kUBERR";
+const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+
+const defaultData={version:3,settings:{hourlyRate:3,incomeBonus:2},tasks:[],habits:[],purchases:[],claimedLevelRewards:[],weeklyClaims:{},dailyQuests:{},weeklyQuests:{},bonusEvents:[],mysteryBoxes:0,lastBoxResult:null};
+const LEVELS=[{id:"bronze",name:"Bronze",emoji:"🥉",min:0,max:500,bonus:0},{id:"silver",name:"Silver",emoji:"🥈",min:500,max:1500,bonus:5},{id:"gold",name:"Gold",emoji:"🥇",min:1500,max:3000,bonus:10},{id:"platinum",name:"Platinum",emoji:"💎",min:3000,max:6000,bonus:15},{id:"diamond",name:"Diamond",emoji:"👑",min:6000,max:10000,bonus:25},{id:"master",name:"Master",emoji:"🏆",min:10000,max:Infinity,bonus:40}];
+const WEEKLY_RANKS=[{id:"start",name:"Getting Started",emoji:"🌱",min:0,bonus:0},{id:"motion",name:"In Motion",emoji:"🔥",min:100,bonus:1},{id:"productive",name:"Productive",emoji:"⚡",min:250,bonus:2},{id:"onfire",name:"On Fire",emoji:"🚀",min:450,bonus:3},{id:"champion",name:"Weekly Champion",emoji:"👑",min:700,bonus:5}];
+const DAILY_QUEST_POOL=[
+ {type:"two_tasks",icon:"✅",text:"Complete two tasks today",reward:{xp:20,money:0,boxes:0}},
+ {type:"long_task",icon:"🧠",text:"Complete a task of at least 60 minutes",reward:{xp:15,money:.5,boxes:0}},
+ {type:"income_task",icon:"💼",text:"Complete an income-generating task",reward:{xp:20,money:0,boxes:1}},
+ {type:"habit_log",icon:"🔁",text:"Log any habit today",reward:{xp:15,money:0,boxes:1}},
+ {type:"scheduled_task",icon:"🎯",text:"Complete a task scheduled for today",reward:{xp:20,money:.5,boxes:0}},
+ {type:"three_small",icon:"🍅",text:"Complete three tasks of 45 minutes or less",reward:{xp:30,money:0,boxes:1}},
+ {type:"balanced_day",icon:"⚖️",text:"Complete activity in two different categories",reward:{xp:35,money:1,boxes:0}},
+ {type:"three_tasks",icon:"⚡",text:"Complete three tasks today",reward:{xp:35,money:0,boxes:1}}
+];
+let data=structuredClone(defaultData),currentUser=null,saveTimer=null,saveInProgress=false,saveQueued=false;
+const $=id=>document.getElementById(id);
+
+$("loginForm").addEventListener("submit",async e=>{e.preventDefault();$("loginError").textContent="";$("loginButton").disabled=true;$("loginButton").textContent="Signing in...";const{error}=await client.auth.signInWithPassword({email:$("loginEmail").value.trim(),password:$("loginPassword").value});if(error){$("loginError").textContent="The email address or password is incorrect.";console.error(error)}$("loginButton").disabled=false;$("loginButton").textContent="🔓 Sign in"});
+async function logout(){setSyncStatus("Signing out...");const{error}=await client.auth.signOut();if(error){alert("Could not sign out.");console.error(error)}}
+function showLogin(){$("appShell").classList.add("hidden");$("loginScreen").classList.remove("hidden");$("loginPassword").value="";$("loginEmail").focus()}
+function showApp(){$("loginScreen").classList.add("hidden");$("appShell").classList.remove("hidden")}
+function setSyncStatus(m,e=false){$("syncStatus").textContent=m;$("syncStatus").style.color=e?"var(--danger)":""}
+function today(){return new Date().toLocaleDateString("en-CA")}
+function dateOnly(v){return v?String(v).slice(0,10):""}
+function parseDate(s){const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)}
+function displayDate(v){if(!v)return"No date";return parseDate(v).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}
+function addDays(s,n){const d=parseDate(s);d.setDate(d.getDate()+Number(n));return d.toLocaleDateString("en-CA")}
+function weekStart(s=today()){const d=parseDate(s),day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.toLocaleDateString("en-CA")}
+function weekEnd(s=today()){return addDays(weekStart(s),6)}
+function weekKey(s=today()){return weekStart(s)}
+function inRange(v,a,b){const d=dateOnly(v);return d>=a&&d<=b}
+function money(n){return new Intl.NumberFormat("en-GB",{style:"currency",currency:"GBP"}).format(Number(n)||0)}
+function uid(){return crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random().toString(16).slice(2)}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c])}
+function categoryLabel(c){return({work:"💼 Work",health:"🏃 Health",home:"🧹 Home",personal:"🌱 Personal"})[c]||"🌱 Personal"}
+
+function normalizeData(v){return{version:3,settings:{hourlyRate:Number(v?.settings?.hourlyRate??3),incomeBonus:Number(v?.settings?.incomeBonus??2)},tasks:(Array.isArray(v?.tasks)?v.tasks:[]).map(t=>({...t,id:t.id||uid(),date:t.date||dateOnly(t.created)||today(),category:t.category||"work"})),habits:(Array.isArray(v?.habits)?v.habits:[]).map(h=>({...h,id:h.id||uid(),startDate:h.startDate||dateOnly(h.started)||today(),category:h.category||"personal",history:Array.isArray(h.history)?h.history:[]})),purchases:(Array.isArray(v?.purchases)?v.purchases:[]).map(p=>({...p,id:p.id||uid(),date:dateOnly(p.date)||today()})),claimedLevelRewards:Array.isArray(v?.claimedLevelRewards)?v.claimedLevelRewards:[],weeklyClaims:v?.weeklyClaims&&typeof v.weeklyClaims==="object"?v.weeklyClaims:{},dailyQuests:v?.dailyQuests&&typeof v.dailyQuests==="object"?v.dailyQuests:{},weeklyQuests:v?.weeklyQuests&&typeof v.weeklyQuests==="object"?v.weeklyQuests:{},bonusEvents:Array.isArray(v?.bonusEvents)?v.bonusEvents:[],mysteryBoxes:Number(v?.mysteryBoxes||0),lastBoxResult:v?.lastBoxResult||null}}
+async function loadFromSupabase(){if(!currentUser)return;setSyncStatus("Loading synced data...");const{data:row,error}=await client.from("reward_bank").select("data").eq("user_id",currentUser.id).maybeSingle();if(error){setSyncStatus("Could not load data",true);console.error(error);alert("Could not load your reward bank. Check Supabase setup.");return}data=row?.data?normalizeData(row.data):structuredClone(defaultData);ensureGameContent();if(!row?.data)await saveNow();render();setSyncStatus("Synced ☁️")}
+function save(){render();setSyncStatus("Saving...");clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,250)}
+async function saveNow(){if(!currentUser)return;if(saveInProgress){saveQueued=true;return}saveInProgress=true;saveQueued=false;const{error}=await client.from("reward_bank").upsert({user_id:currentUser.id,data,updated_at:new Date().toISOString()},{onConflict:"user_id"});saveInProgress=false;if(error){setSyncStatus("Changes not saved",true);console.error(error)}else setSyncStatus("Synced ☁️");if(saveQueued)await saveNow()}
+
+function taskBaseReward(t){return Number(t.reward||0)+Number(t.income||0)*data.settings.incomeBonus/100}
+function taskXp(t){return Math.round(taskBaseReward(t)*10)}
+function habitXp(h){return Math.round(Number(h.reward||0)*10)}
+function totals(){const completed=data.tasks.filter(t=>t.done);const taskEarned=completed.reduce((s,t)=>s+taskBaseReward(t),0);const habitEarned=data.habits.reduce((s,h)=>s+(h.claimed?Number(h.reward||0):0),0);const levelEarned=LEVELS.reduce((s,l)=>s+(data.claimedLevelRewards.includes(l.id)?l.bonus:0),0);const weeklyEarned=Object.values(data.weeklyClaims).flat().reduce((s,id)=>s+(WEEKLY_RANKS.find(r=>r.id===id)?.bonus||0),0);const bonusMoney=data.bonusEvents.reduce((s,e)=>s+Number(e.money||0),0);const spent=data.purchases.reduce((s,p)=>s+Number(p.amount||0),0);const coreXp=completed.reduce((s,t)=>s+taskXp(t),0)+data.habits.reduce((s,h)=>s+(h.claimed?habitXp(h):0),0);const bonusXp=data.bonusEvents.reduce((s,e)=>s+Number(e.xp||0),0);return{balance:taskEarned+habitEarned+levelEarned+weeklyEarned+bonusMoney-spent,xp:coreXp+bonusXp}}
+function weeklyXp(){const a=weekStart(),b=weekEnd();let xp=data.tasks.filter(t=>t.done&&inRange(t.completedAt,a,b)).reduce((s,t)=>s+taskXp(t),0);xp+=data.habits.filter(h=>h.claimed&&inRange(h.claimedAt,a,b)).reduce((s,h)=>s+habitXp(h),0);xp+=data.bonusEvents.filter(e=>inRange(e.date,a,b)).reduce((s,e)=>s+Number(e.xp||0),0);return xp}
+function currentLevel(xp){return LEVELS.find(l=>xp>=l.min&&xp<l.max)||LEVELS.at(-1)}
+function currentWeeklyRank(xp){return [...WEEKLY_RANKS].reverse().find(r=>xp>=r.min)||WEEKLY_RANKS[0]}
+function addBonus({label,xp=0,money:cash=0,date=today(),source="bonus"}){data.bonusEvents.push({id:uid(),label,xp:Number(xp),money:Number(cash),date,source,createdAt:new Date().toISOString()})}
+function rewardText(r){return[Number(r.xp)>0?`+${r.xp} XP`:"",Number(r.money)>0?`+${money(r.money)}`:"",Number(r.boxes)>0?`+${r.boxes} 🎁`:""].filter(Boolean).join(" · ")}
+
+function seededShuffle(items,seed){let x=0;for(const c of seed)x=(x*31+c.charCodeAt(0))>>>0;const a=[...items];for(let i=a.length-1;i>0;i--){x=(1664525*x+1013904223)>>>0;const j=x%(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+function ensureGameContent(){const d=today(),wk=weekKey();if(!data.dailyQuests[d]){let pool=[...DAILY_QUEST_POOL];if(!data.habits.length)pool=pool.filter(q=>q.type!=="habit_log");if(!data.tasks.some(t=>Number(t.income)>0))pool=pool.filter(q=>q.type!=="income_task");data.dailyQuests[d]=seededShuffle(pool,d+currentUser?.id).slice(0,3).map(q=>({...q,id:uid(),claimed:false}))}if(!data.weeklyQuests[wk]){const options=[{type:"hours",icon:"📚",text:"Complete 5 hours of tasks this week",target:5,reward:{xp:75,money:3,boxes:1}},{type:"tasks",icon:"🏹",text:"Complete 7 tasks this week",target:7,reward:{xp:75,money:3,boxes:1}},{type:"productive_days",icon:"🔥",text:"Be productive on 5 different days",target:5,reward:{xp:85,money:3,boxes:1}},{type:"habit_logs",icon:"🌿",text:"Log habits on 5 occasions this week",target:5,reward:{xp:70,money:3,boxes:1}}];let available=data.habits.length?options:options.filter(o=>o.type!=="habit_logs");data.weeklyQuests[wk]={...seededShuffle(available,wk+currentUser?.id)[0],id:uid(),claimed:false}}
+ Object.keys(data.dailyQuests).filter(k=>k<addDays(d,-45)).forEach(k=>delete data.dailyQuests[k]);Object.keys(data.weeklyQuests).filter(k=>k<addDays(wk,-90)).forEach(k=>delete data.weeklyQuests[k])}
+function completedToday(){return data.tasks.filter(t=>t.done&&dateOnly(t.completedAt)===today())}
+function questProgress(q){const tasks=completedToday();switch(q.type){case"two_tasks":return Math.min(2,tasks.length);case"three_tasks":return Math.min(3,tasks.length);case"long_task":return tasks.some(t=>Number(t.hours)>=1)?1:0;case"income_task":return tasks.some(t=>Number(t.income)>0)?1:0;case"habit_log":return data.habits.some(h=>h.history.includes(today()))?1:0;case"scheduled_task":return tasks.some(t=>t.date===today())?1:0;case"three_small":return Math.min(3,tasks.filter(t=>Number(t.hours)<=.75).length);case"balanced_day":{const cats=new Set(tasks.map(t=>t.category));data.habits.filter(h=>h.history.includes(today())).forEach(h=>cats.add(h.category));return Math.min(2,cats.size)}default:return 0}}
+function questTarget(q){return({two_tasks:2,three_tasks:3,three_small:3,balanced_day:2})[q.type]||1}
+function weeklyQuestProgress(q){const a=weekStart(),b=weekEnd(),tasks=data.tasks.filter(t=>t.done&&inRange(t.completedAt,a,b));switch(q.type){case"hours":return tasks.reduce((s,t)=>s+Number(t.hours||0),0);case"tasks":return tasks.length;case"productive_days":return new Set([...tasks.map(t=>dateOnly(t.completedAt)),...data.habits.flatMap(h=>h.history.filter(d=>inRange(d,a,b)))]).size;case"habit_logs":return data.habits.reduce((s,h)=>s+h.history.filter(d=>inRange(d,a,b)).length,0);default:return 0}}
+function grantReward(reward,label,source){if(reward.xp||reward.money)addBonus({label,xp:reward.xp,money:reward.money,source});if(reward.boxes)data.mysteryBoxes+=Number(reward.boxes);celebrate()}
+
+function render(){ensureGameContent();const t=totals(),wx=weeklyXp(),lvl=currentLevel(t.xp),rank=currentWeeklyRank(wx);$("balance").textContent=money(t.balance);$("weeklyXpKpi").textContent=`${wx.toLocaleString()} XP`;$("boxKpi").textContent=data.mysteryBoxes;$("boxCount").textContent=data.mysteryBoxes;$("openBoxButton").disabled=data.mysteryBoxes<1;$("levelName").textContent=`${lvl.emoji} ${lvl.name}`;$("weeklyRankTitle").textContent=`${rank.emoji} ${rank.name}`;$("weekDates").textContent=`${displayDate(weekStart())}–${displayDate(weekEnd())}`;const next=WEEKLY_RANKS.find(r=>r.min>wx);if(next){$("weeklyProgressText").textContent=`${next.min-wx} XP to ${next.emoji} ${next.name}`;const prev=rank.min;$("weeklyFill").style.width=`${Math.min(100,(wx-prev)/(next.min-prev)*100)}%`}else{$("weeklyProgressText").textContent="Top weekly rank reached! 🎉";$("weeklyFill").style.width="100%"}const claims=data.weeklyClaims[weekKey()]||[];const ready=WEEKLY_RANKS.filter(r=>r.bonus>0&&wx>=r.min&&!claims.includes(r.id));$("weeklyClaimNotice").innerHTML=ready.length?`<div class="notice">🎉 ${ready.length} weekly rank reward${ready.length>1?"s are":" is"} ready to claim below.</div>`:"";renderWeeklyRanks(wx);renderDailyQuests();renderWeeklyQuest();renderTasks();renderHabits();renderLevelRoadmap();renderPurchases();$("hourlyRate").value=data.settings.hourlyRate;$("incomeBonus").value=data.settings.incomeBonus;$("lastBoxResult").classList.toggle("hidden",!data.lastBoxResult);if(data.lastBoxResult)$("lastBoxResult").textContent=`Last pull: ${data.lastBoxResult}`}
+function renderWeeklyRanks(wx){const claims=data.weeklyClaims[weekKey()]||[];$("weeklyRankStrip").innerHTML=WEEKLY_RANKS.map(r=>{const reached=wx>=r.min,claimed=claims.includes(r.id);return`<div class="rank-step ${reached?"reached":""} ${claimed?"claimed":""}"><div class="rank-emoji">${r.emoji}</div><strong class="small">${r.name}</strong><div class="tiny muted">${r.min} XP</div>${r.bonus===0?'<div class="tiny">Start</div>':claimed?'<div class="tiny">✓ Claimed</div>':reached?`<button class="gold-btn tiny" style="padding:6px;margin-top:5px" onclick="claimWeeklyRank('${r.id}')">Claim ${money(r.bonus)}</button>`:`<div class="tiny">${money(r.bonus)}</div>`}</div>`}).join("")}
+function claimWeeklyRank(id){const r=WEEKLY_RANKS.find(x=>x.id===id),wk=weekKey(),wx=weeklyXp();if(!r||wx<r.min||r.bonus<=0)return;if(!data.weeklyClaims[wk])data.weeklyClaims[wk]=[];if(data.weeklyClaims[wk].includes(id))return;data.weeklyClaims[wk].push(id);celebrate();save()}
+function renderDailyQuests(){const qs=data.dailyQuests[today()]||[];$("questDate").textContent=displayDate(today());$("dailyQuestList").innerHTML=qs.map((q,i)=>{const p=questProgress(q),target=questTarget(q),done=p>=target;return`<div class="quest-card ${done?"done":""}"><div class="row"><div class="quest-icon">${q.icon}</div><div><div class="item-title">${escapeHtml(q.text)}</div><div class="muted small">Progress: ${Math.min(p,target)}/${target}</div><div class="quest-reward small">${rewardText(q.reward)}</div></div>${q.claimed?'<span class="right pill good">✓ Claimed</span>':done?`<button class="primary right" onclick="claimDailyQuest(${i})">Claim</button>`:'<span class="right pill neutral">In progress</span>'}</div></div>`}).join("")}
+function claimDailyQuest(i){const q=data.dailyQuests[today()]?.[i];if(!q||q.claimed||questProgress(q)<questTarget(q))return;q.claimed=true;q.claimedAt=new Date().toISOString();grantReward(q.reward,`Daily quest: ${q.text}`,"daily_quest");save()}
+function renderWeeklyQuest(){const q=data.weeklyQuests[weekKey()],p=q?weeklyQuestProgress(q):0,target=q?.target||1,done=p>=target;$("weeklyQuestDates").textContent=`${displayDate(weekStart())}–${displayDate(weekEnd())}`;$("weeklyQuestCard").innerHTML=q?`<div class="quest-card ${done?"done":""}"><div class="row"><div class="quest-icon">${q.icon}</div><div style="flex:1"><div class="item-title">${escapeHtml(q.text)}</div><div class="muted small">${Math.min(p,target).toFixed(q.type==="hours"?1:0)} / ${target}${q.type==="hours"?" hours":""}</div><div class="bar"><div class="fill" style="width:${Math.min(100,p/target*100)}%"></div></div><div class="quest-reward small" style="margin-top:7px">${rewardText(q.reward)}</div></div>${q.claimed?'<span class="pill good">✓ Claimed</span>':done?'<button class="primary" onclick="claimWeeklyQuest()">Claim</button>':'<span class="pill neutral">In progress</span>'}</div></div>`:""}
+function claimWeeklyQuest(){const q=data.weeklyQuests[weekKey()];if(!q||q.claimed||weeklyQuestProgress(q)<q.target)return;q.claimed=true;q.claimedAt=new Date().toISOString();grantReward(q.reward,`Weekly challenge: ${q.text}`,"weekly_quest");save()}
+
+function renderTasks(){const show=$("showCompleted").checked,count=data.tasks.filter(t=>t.done).length;$("showCompletedLabel").textContent=`Show completed tasks (${count})`;const visible=data.tasks.map((t,i)=>({t,i})).filter(({t})=>show||!t.done).sort((a,b)=>String(b.t.date).localeCompare(String(a.t.date)));$("taskList").innerHTML=visible.length?visible.map(({t,i})=>`<div class="task"><div class="row"><div><div class="item-title">${t.done?"✅":"📌"} ${escapeHtml(t.name)}</div><span class="pill neutral">📅 ${displayDate(t.date)}</span><span class="pill">${categoryLabel(t.category)}</span><span class="pill">⏱️ ${t.hours} h</span><span class="pill">💷 ${money(t.reward)}</span>${Number(t.income)>0?`<span class="pill good">💸 Income ${money(t.income)}</span>`:""}</div><button class="${t.done?"secondary":"primary"} right" onclick="toggleTask(${i})">${t.done?"↩ Undo":"✅ Complete"}</button></div><div class="row"><button class="ghost small" onclick="editTaskReward(${i})">✏️ Edit reward</button><button class="ghost small" onclick="deleteTask(${i})">🗑️ Delete</button></div></div>`).join(""):`<div class="empty">${count&&!show?"🎉 All current tasks are complete. Open the archive to see them.":"No tasks yet. Add one when you are ready. 🌱"}</div>`}
+function renderHabits(){if(!data.habits.length){$("habitList").innerHTML='<div class="empty">No habits yet. Create a small challenge. 🌱</div>';return}$("habitList").innerHTML=data.habits.map((h,i)=>{const deadline=addDays(h.startDate,h.days-1),expired=today()>deadline&&!h.claimed,progress=Math.min(100,h.count/h.target*100),last=h.history.at(-1);return`<div class="habit"><div class="item-title">${h.claimed?"🏅":"🔁"} ${escapeHtml(h.name)}</div><span class="pill">${categoryLabel(h.category)}</span><div class="muted small">${h.count}/${h.target} · ${displayDate(h.startDate)} to ${displayDate(deadline)}</div>${last?`<div class="muted small">Last logged: ${displayDate(last)}</div>`:""}<div class="bar"><div class="fill" style="width:${progress}%"></div></div><div class="row" style="margin-top:10px"><button class="secondary" onclick="incrementHabit(${i})" ${h.claimed||expired?"disabled":""}>➕ Log today</button>${h.count>=h.target&&!h.claimed?`<button class="primary" onclick="claimHabit(${i})">🎁 Claim ${money(h.reward)}</button>`:h.claimed?'<span class="success small">✓ Claimed</span>':expired?'<span class="warning small">Expired</span>':`<span class="muted small">${money(h.reward)} at target</span>`}<button class="ghost right" onclick="deleteHabit(${i})">🗑️</button></div></div>`}).join("")}
+function renderLevelRoadmap(){const t=totals();$("levelRoadmap").innerHTML=LEVELS.map(l=>{const unlocked=t.xp>=l.min,claimed=data.claimedLevelRewards.includes(l.id),current=currentLevel(t.xp).id===l.id;return`<div class="tile ${current?"current":""} ${unlocked?"":"locked"}"><div class="row"><span style="font-size:1.5rem">${l.emoji}</span><div><h3>${l.name}</h3><div class="muted small">${l.min.toLocaleString()}${l.max===Infinity?"+":`–${l.max.toLocaleString()}`} XP</div></div></div>${l.bonus===0?'<span class="pill neutral">Starting level</span>':claimed?'<span class="pill good">✓ Claimed</span>':unlocked?`<button class="success-btn" style="width:100%;margin-top:9px" onclick="claimLevelReward('${l.id}')">🎁 Claim ${money(l.bonus)}</button>`:`<span class="pill neutral">🔒 ${l.min.toLocaleString()} XP</span>`}</div>`}).join("")}
+function renderPurchases(){if(!data.purchases.length){$("purchaseList").innerHTML='<div class="empty">No reward purchases yet. Your future treat is waiting. ✨</div>';return}$("purchaseList").innerHTML=data.purchases.map((p,i)=>({p,i})).sort((a,b)=>String(b.p.date).localeCompare(String(a.p.date))).slice(0,12).map(({p,i})=>`<div class="purchase row"><div><div class="item-title">🛍️ ${escapeHtml(p.name)}</div><div class="muted small">${displayDate(p.date)}</div></div><div class="right">${money(p.amount)}</div><button class="ghost" onclick="deletePurchase(${i})">🗑️</button></div>`).join("")}
+
+function openTaskDialog(){$("taskName").value="";$("taskDate").value=today();$("taskCategory").value="work";$("taskHours").value="1";$("taskIncome").value="0";suggestTaskReward();$("taskDialog").showModal()}
+function suggestTaskReward(){$("taskReward").value=(Number($("taskHours").value||0)*data.settings.hourlyRate).toFixed(2)}
+function addTask(e){e.preventDefault();data.tasks.unshift({id:uid(),name:$("taskName").value.trim(),date:$("taskDate").value,category:$("taskCategory").value,hours:Number($("taskHours").value),reward:Number($("taskReward").value),income:Number($("taskIncome").value||0),done:false,created:new Date().toISOString()});$("taskDialog").close();save()}
+function toggleTask(i){const t=data.tasks[i];t.done=!t.done;t.completedAt=t.done?new Date().toISOString():null;save()}
+function editTaskReward(i){const v=prompt("Expected reward (£):",data.tasks[i].reward);if(v!==null&&!isNaN(Number(v))){data.tasks[i].reward=Math.max(0,Number(v));save()}}
+function deleteTask(i){if(confirm("Delete this task?")){data.tasks.splice(i,1);save()}}
+function openHabitDialog(){$("habitName").value="";$("habitCategory").value="health";$("habitStartDate").value=today();$("habitTarget").value="7";$("habitDays").value="14";$("habitReward").value="5";$("habitDialog").showModal()}
+function addHabit(e){e.preventDefault();data.habits.push({id:uid(),name:$("habitName").value.trim(),category:$("habitCategory").value,startDate:$("habitStartDate").value,target:Number($("habitTarget").value),days:Number($("habitDays").value),reward:Number($("habitReward").value),count:0,history:[],claimed:false,started:new Date().toISOString()});$("habitDialog").close();save()}
+function incrementHabit(i){const h=data.habits[i],d=today();if(h.claimed||d>addDays(h.startDate,h.days-1))return;if(h.history.includes(d)){alert("You have already logged this habit today. ✅");return}h.history.push(d);h.count=h.history.length;save()}
+function claimHabit(i){const h=data.habits[i];if(h.count>=h.target&&!h.claimed){h.claimed=true;h.claimedAt=new Date().toISOString();celebrate();save()}}
+function deleteHabit(i){if(confirm("Delete this habit?")){data.habits.splice(i,1);save()}}
+function openPurchaseDialog(){$("purchaseName").value="";$("purchaseDate").value=today();$("purchaseAmount").value="";$("purchaseDialog").showModal()}
+function addPurchase(e){e.preventDefault();data.purchases.push({id:uid(),name:$("purchaseName").value.trim(),amount:Number($("purchaseAmount").value),date:$("purchaseDate").value,created:new Date().toISOString()});$("purchaseDialog").close();save()}
+function deletePurchase(i){if(confirm("Delete this purchase?")){data.purchases.splice(i,1);save()}}
+function claimLevelReward(id){const l=LEVELS.find(x=>x.id===id),t=totals();if(!l||t.xp<l.min||data.claimedLevelRewards.includes(id))return;data.claimedLevelRewards.push(id);celebrate();save()}
+function openMysteryBox(){if(data.mysteryBoxes<1)return;data.mysteryBoxes--;const r=Math.random()*100;let result;if(r<45)result={xp:10,money:0,text:"⚡ 10 bonus XP"};else if(r<70)result={xp:25,money:0,text:"⚡ 25 bonus XP"};else if(r<85)result={xp:0,money:.5,text:"💷 £0.50 reward"};else if(r<95)result={xp:0,money:1,text:"💷 £1 reward"};else if(r<99)result={xp:0,money:2,text:"🌟 £2 reward"};else result={xp:0,money:5,text:"🎉 £5 JACKPOT!"};addBonus({label:`Mystery box: ${result.text}`,xp:result.xp,money:result.money,source:"mystery_box"});data.lastBoxResult=result.text;$("boxDialogText").textContent=result.text;$("boxDialog").showModal();celebrate();save()}
+function saveSettings(){data.settings.hourlyRate=Math.max(0,Number($("hourlyRate").value||0));data.settings.incomeBonus=Math.max(0,Number($("incomeBonus").value||0));save()}
+function exportData(){const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="phdone-reward-bank-backup-v3.json";a.click();URL.revokeObjectURL(a.href)}
+function importData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{data=normalizeData(JSON.parse(r.result));ensureGameContent();save();alert("Backup imported and synced. ☁️")}catch{alert("That file could not be imported.")}};r.readAsText(f);e.target.value=""}
+function resetAll(){if(confirm("Reset all tasks, habits, game progress, purchases and rewards?")){data=structuredClone(defaultData);ensureGameContent();save()}}
+function celebrate(){const c=$("confetti"),icons=["✨","🎉","⭐","🎊","💜"];c.innerHTML=Array.from({length:24},(_,i)=>`<span style="left:${Math.random()*100}%;animation-delay:${Math.random()*.35}s">${icons[i%icons.length]}</span>`).join("");setTimeout(()=>c.innerHTML="",2300)}
+client.auth.onAuthStateChange(async(e,s)=>{currentUser=s?.user??null;if(currentUser){showApp();await loadFromSupabase()}else{data=structuredClone(defaultData);showLogin()}});
+</script>
+</body></html>
