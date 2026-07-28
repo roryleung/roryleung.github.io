@@ -28,14 +28,37 @@
     .habit-actions{display:flex;gap:6px;flex-wrap:wrap}.habit-actions button{padding:7px 9px;font-size:.78rem}
     .count-badge{display:inline-flex;min-width:30px;height:30px;align-items:center;justify-content:center;border-radius:999px;background:var(--soft);color:var(--accent);font-weight:850}
     .streak-clock{font-size:1.35rem;font-weight:900;margin:6px 0}.streak-safe{color:var(--good)}.streak-history{margin-top:10px}.field-help{font-size:.76rem;color:var(--muted);margin-top:4px}
+
+    .app-header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:14px}
+    .header-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .tabs-wrap{position:sticky;top:0;z-index:50;padding:8px 0 12px;background:linear-gradient(180deg,rgba(247,247,252,.98),rgba(247,247,252,.92),rgba(247,247,252,0));backdrop-filter:blur(10px)}
+    .tabs{display:flex;gap:8px;overflow-x:auto;padding:5px;background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);scrollbar-width:none}
+    .tabs::-webkit-scrollbar{display:none}.tab-btn{flex:0 0 auto;background:transparent;color:var(--muted);padding:10px 14px;border-radius:11px;white-space:nowrap}
+    .tab-btn.active{background:var(--accent);color:#fff;box-shadow:0 5px 14px rgba(109,93,252,.28)}
+    .tab-panel{display:none}.tab-panel.active{display:block}.tab-panel>.grid{margin-top:14px}
+    .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .quick-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.quick-action{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;text-align:left;box-shadow:var(--shadow)}
+    .quick-action strong{display:block;margin-top:4px}.quick-action span{font-size:1.35rem}
+    .account-card{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+    @media(max-width:800px){.app-header{flex-direction:column}.header-actions{width:100%;justify-content:flex-start}.header-actions button{flex:1}.tabs-wrap{top:0}.quick-actions{grid-template-columns:repeat(2,1fr)}.account-card{grid-template-columns:1fr}.tab-btn{padding:10px 12px}}
   </style>
 </head>
 <body>
 <section id="loginScreen" class="login-screen"><form id="loginForm" class="login-card"><h1>🎓 PhDone</h1><p class="muted">Sign in to your synced productivity game.</p><input id="loginEmail" type="email" autocomplete="email" placeholder="Email address" required><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password" required><div id="loginError" class="login-error" aria-live="polite"></div><button id="loginButton" class="primary" style="width:100%">🔓 Sign in</button><button type="button" class="ghost" style="width:100%;margin-top:8px" onclick="sendPasswordReset()">Forgot password?</button><p class="muted small" style="margin-top:14px">Your account and data are handled by Supabase.</p></form></section>
 
 <div id="appShell" class="shell hidden">
-<header><div><h1>🎓 PhDone Reward Bank</h1><p class="muted">A productivity game with fresh goals, guaranteed rewards and a little luck. ✨</p><p id="syncStatus" class="muted small" style="margin-top:4px">Connecting...</p></div><div class="top-actions"><button class="secondary" onclick="openTaskDialog()">➕ Task</button><button class="secondary" onclick="openHabitDialog()">🔁 Habit</button><button class="secondary" onclick="openWishDialog()">🌟 Dream purchase</button><button class="secondary" onclick="openPurchaseDialog()">🛍️ Spend</button><button class="ghost" onclick="openPasswordDialog()">🔒 Change password</button><button class="ghost" onclick="logout()">🚪 Log out</button></div></header>
+<header class="app-header"><div><h1>🎓 PhDone Reward Bank</h1><p class="muted">A calmer space for tasks, habits, rewards and progress. ✨</p><p id="syncStatus" class="muted small" style="margin-top:4px">Connecting...</p></div><div class="header-actions"><button class="secondary" onclick="openTaskDialog()">➕ Task</button><button class="secondary" onclick="openHabitDialog()">🔁 Habit</button><button class="secondary" onclick="openWishDialog()">🌟 Dream</button><button class="ghost" onclick="logout()">🚪 Log out</button></div></header>
 
+<div class="tabs-wrap"><nav class="tabs" aria-label="Main sections">
+<button class="tab-btn active" data-tab="dashboard" onclick="showTab('dashboard')">🏠 Dashboard</button>
+<button class="tab-btn" data-tab="tasks" onclick="showTab('tasks')">📝 Tasks</button>
+<button class="tab-btn" data-tab="habits" onclick="showTab('habits')">🔁 Habits</button>
+<button class="tab-btn" data-tab="rewards" onclick="showTab('rewards')">🌟 Rewards</button>
+<button class="tab-btn" data-tab="progress" onclick="showTab('progress')">🏛️ Progress</button>
+<button class="tab-btn" data-tab="settings" onclick="showTab('settings')">⚙️ Settings</button>
+</nav></div>
+
+<section id="tab-dashboard" class="tab-panel active">
 <section class="grid">
 <div class="card span-3"><div class="muted small">💰 Available balance</div><div class="kpi" id="balance">£0.00</div></div>
 <div class="card span-3"><div class="muted small">🔥 This week's XP</div><div class="kpi" id="weeklyXpKpi">0 XP</div></div>
@@ -43,25 +66,46 @@
 <div class="card span-3"><div class="muted small">🏆 Lifetime level</div><div class="kpi" id="levelName">🥉 Bronze</div></div>
 
 <div class="card span-12 hero">
- <div class="row"><div><div class="muted small">Renewable weekly adventure</div><h2 id="weeklyRankTitle" style="font-size:1.4rem;margin:3px 0 0">🌱 Getting Started</h2></div><button class="secondary right" onclick="gameInfoDialog.showModal()">❓ How the game works</button></div>
+ <div class="row"><div><div class="muted small">Renewable weekly adventure</div><h2 id="weeklyRankTitle" style="font-size:1.4rem;margin:3px 0 0">🌱 Getting Started</h2></div><button class="secondary right" onclick="gameInfoDialog.showModal()">❓ How it works</button></div>
  <div class="row" style="margin-top:10px"><div id="weeklyProgressText" class="muted small">Start earning XP</div><div id="weekDates" class="right muted small"></div></div>
  <div class="bar"><div class="fill" id="weeklyFill"></div></div><div id="weeklyClaimNotice"></div><div id="weeklyRankStrip" class="rank-strip"></div>
 </div>
 
+<div class="card span-12"><h2>⚡ Quick add</h2><div class="quick-actions">
+<button class="quick-action" onclick="openTaskDialog()"><span>📝</span><strong>New task</strong><small class="muted">Add work to complete</small></button>
+<button class="quick-action" onclick="openHabitDialog()"><span>🔁</span><strong>New habit</strong><small class="muted">Activity or abstinence</small></button>
+<button class="quick-action" onclick="openWishDialog()"><span>🌟</span><strong>Dream purchase</strong><small class="muted">Add something motivating</small></button>
+<button class="quick-action" onclick="openPurchaseDialog()"><span>🛍️</span><strong>Record spending</strong><small class="muted">Use your reward balance</small></button>
+</div></div>
+
 <div class="card span-8"><div class="row"><h2>🎲 Today's quests</h2><span id="questDate" class="right muted small"></span></div><p class="muted small">Three rotating bonuses. Your ordinary task reward is always guaranteed.</p><div id="dailyQuestList"></div></div>
-<div class="card span-4 mystery"><h2>🎁 Mystery box</h2><div class="row"><div class="box-count" id="boxCount">0</div><div class="muted">boxes ready</div></div><p class="muted small" style="margin:8px 0 12px">Every box wins something: XP, money or a rare jackpot.</p><button id="openBoxButton" class="gold-btn pulse" style="width:100%" onclick="openMysteryBox()">✨ Open a box</button><div id="lastBoxResult" class="notice hidden"></div></div>
-
+<div class="card span-4 mystery"><h2>🎁 Mystery box</h2><div class="row"><div class="box-count" id="boxCount">0</div><div class="muted">boxes ready</div></div><p class="muted small" style="margin:8px 0 12px">Every box wins something.</p><button id="openBoxButton" class="gold-btn pulse" style="width:100%" onclick="openMysteryBox()">✨ Open a box</button><div id="lastBoxResult" class="notice hidden"></div></div>
 <div class="card span-12"><div class="row"><h2>🗺️ Weekly challenge</h2><span id="weeklyQuestDates" class="right muted small"></span></div><div id="weeklyQuestCard"></div></div>
+</section></section>
 
-<div class="card span-7"><div class="row"><h2>📝 Tasks</h2><button class="ghost right" onclick="openTaskDialog()">Add</button></div><div class="toggle-row small muted" style="margin-bottom:6px"><input id="showCompleted" type="checkbox" onchange="renderTasks()"><label for="showCompleted" id="showCompletedLabel">Show completed tasks</label></div><div id="taskList"></div></div>
-<div class="card span-5"><div class="row"><h2>🔁 Habit achievements</h2><button class="ghost right" onclick="openHabitDialog()">Add</button></div><div id="habitList"></div></div>
+<section id="tab-tasks" class="tab-panel"><section class="grid">
+<div class="card span-12"><div class="section-head"><div><h2>📝 Tasks</h2><p class="muted small">Plan work, complete it and earn your chosen reward.</p></div><button class="secondary" onclick="openTaskDialog()">➕ Add task</button></div><div class="toggle-row small muted" style="margin-bottom:6px"><input id="showCompleted" type="checkbox" onchange="renderTasks()"><label for="showCompleted" id="showCompletedLabel">Show completed tasks</label></div><div id="taskList"></div></div>
+</section></section>
 
-<div class="card span-12"><div class="row"><h2>🏛️ Lifetime milestones</h2><button class="ghost right" onclick="lifetimeInfoDialog.showModal()">About these</button></div><p class="muted small">A background record of your total progress—not your main daily target.</p><div id="levelRoadmap" class="roadmap"></div></div>
+<section id="tab-habits" class="tab-panel"><section class="grid">
+<div class="card span-12"><div class="section-head"><div><h2>🔁 Habits & streaks</h2><p class="muted small">Track flexible activity goals or abstinence streaks in one place.</p></div><button class="secondary" onclick="openHabitDialog()">➕ Add habit</button></div><div id="habitList"></div></div>
+</section></section>
 
-<div class="card span-12"><div class="row"><div><h2>🌟 Future purchases</h2><p class="muted small">Keep a visual wish list. Nothing is deducted until you actually buy it.</p></div><button class="secondary right" onclick="openWishDialog()">➕ Add a dream</button></div><div class="info-box" style="margin-top:12px"><strong>💡 Motivation view:</strong> each card compares its price with your current reward balance and shows how close you are. Photos are stored privately in Supabase Storage.</div><div id="wishList" class="dream-grid"></div></div>
-<div class="card span-6"><div class="row"><h2>🛍️ Recent spending</h2><button class="ghost right" onclick="openPurchaseDialog()">Add</button></div><div id="purchaseList"></div></div>
-<div class="card span-6"><h2>⚙️ Settings & backup</h2><div class="modal-grid"><div><div class="label">Default reward per hour (£)</div><input id="hourlyRate" type="number" min="0" step="0.25" onchange="saveSettings()"></div><div><div class="label">Income bonus (%)</div><input id="incomeBonus" type="number" min="0" step="0.5" onchange="saveSettings()"></div></div><div class="row wrap"><button class="secondary" onclick="exportData()">📤 Export backup</button><label class="secondary" style="padding:11px 14px;border-radius:12px;font-weight:750;cursor:pointer">📥 Import backup<input type="file" accept="application/json" onchange="importData(event)" style="display:none"></label><button class="danger" onclick="resetAll()">🗑️ Reset all</button></div></div>
-</section></div>
+<section id="tab-rewards" class="tab-panel"><section class="grid">
+<div class="card span-12"><div class="section-head"><div><h2>🌟 Future purchases</h2><p class="muted small">Keep a visual wish list. Nothing is deducted until you buy it.</p></div><button class="secondary" onclick="openWishDialog()">➕ Add a dream</button></div><div id="wishList" class="dream-grid"></div></div>
+<div class="card span-12"><div class="section-head"><div><h2>🛍️ Recent spending</h2><p class="muted small">Purchases deducted from your reward balance.</p></div><button class="secondary" onclick="openPurchaseDialog()">➕ Add purchase</button></div><div id="purchaseList"></div></div>
+</section></section>
+
+<section id="tab-progress" class="tab-panel"><section class="grid">
+<div class="card span-12"><div class="section-head"><div><h2>🏛️ Lifetime milestones</h2><p class="muted small">Your long-term record of total XP and unlocked rewards.</p></div><button class="ghost" onclick="lifetimeInfoDialog.showModal()">About these</button></div><div id="levelRoadmap" class="roadmap"></div></div>
+</section></section>
+
+<section id="tab-settings" class="tab-panel"><section class="grid">
+<div class="card span-12"><div class="account-card"><div><h2>👤 Account</h2><p class="muted small">Manage your password or sign out securely.</p></div><div class="row wrap"><button class="secondary" onclick="openPasswordDialog()">🔒 Change password</button><button class="ghost" onclick="logout()">🚪 Log out</button></div></div></div>
+<div class="card span-12"><h2>⚙️ Reward settings</h2><div class="modal-grid"><div><div class="label">Default reward per hour (£)</div><input id="hourlyRate" type="number" min="0" step="0.25" onchange="saveSettings()"></div><div><div class="label">Income bonus (%)</div><input id="incomeBonus" type="number" min="0" step="0.5" onchange="saveSettings()"></div></div></div>
+<div class="card span-12"><h2>💾 Backup & reset</h2><p class="muted small" style="margin-bottom:12px">Export a backup before making major changes.</p><div class="row wrap"><button class="secondary" onclick="exportData()">📤 Export backup</button><label class="secondary" style="padding:11px 14px;border-radius:12px;font-weight:750;cursor:pointer">📥 Import backup<input type="file" accept="application/json" onchange="importData(event)" style="display:none"></label><button class="danger" onclick="resetAll()">🗑️ Reset all</button></div></div>
+</section></section>
+</div>
 
 <dialog id="taskDialog"><form method="dialog" class="modal" onsubmit="addTask(event)"><h2>➕ Add task</h2><div class="modal-grid"><div class="full"><div class="label">Task</div><input id="taskName" required placeholder="e.g. Write thesis section"></div><div><div class="label">Date</div><input id="taskDate" type="date" required></div><div><div class="label">Category</div><select id="taskCategory"><option value="work">💼 Work / study</option><option value="health">🏃 Health</option><option value="home">🧹 Home</option><option value="personal">🌱 Personal</option></select></div><div><div class="label">Estimated hours</div><input id="taskHours" type="number" min="0.25" step="0.25" inputmode="decimal" required oninput="suggestTaskReward()"></div><div><div class="label">Expected reward (£)</div><input id="taskReward" type="number" min="0" step="0.25" required></div><div class="full"><div class="label">Income generated (£, optional)</div><input id="taskIncome" type="number" min="0" step="0.01" value="0"></div></div><div class="row"><button type="button" class="ghost" onclick="taskDialog.close()">Cancel</button><button class="primary right">Add task</button></div></form></dialog>
 <dialog id="habitDialog"><form method="dialog" class="modal" onsubmit="saveHabit(event)"><h2 id="habitDialogTitle">🔁 Add flexible habit</h2><p class="muted small">Set any target you like. A habit can happen irregularly, on past dates, or several times on the same day.</p><div class="modal-grid"><div class="full"><div class="label">Habit</div><input id="habitName" required placeholder="e.g. Gym, laundry, read a paper"></div><div><div class="label">Category</div><select id="habitCategory"><option value="health">🏃 Health</option><option value="home">🧹 Home</option><option value="work">💼 Work / study</option><option value="personal">🌱 Personal</option></select></div><div><div class="label">Habit type</div><select id="habitMode" onchange="updateHabitModeFields()"><option value="regular">🔁 Activity goal</option><option value="abstinence">🛡️ Abstinence streak</option></select></div><div id="regularStartField"><div class="label">Start date</div><input id="habitStartDate" type="date" required></div><div id="regularTargetField"><div class="label">Target total</div><input id="habitTarget" type="number" min="1" step="1" required value="7"></div><div id="regularDaysField"><div class="label">Tracking window (days)</div><input id="habitDays" type="number" min="1" step="1" required value="14"></div><div id="abstinenceStartField" class="full hidden"><div class="label">Abstinence started</div><input id="habitAbstinenceStart" type="datetime-local"><div class="field-help">You may choose a past date and exact time.</div></div><div id="abstinenceTargetField" class="hidden"><div class="label">Reward after how many days?</div><input id="habitAbstinenceDays" type="number" min="0.01" step="0.01" value="7"></div><div class="full"><div class="label">Achievement bonus (£)</div><input id="habitReward" type="number" min="0" step="0.25" required value="5"></div></div><div class="info-box small"><strong>Activity examples:</strong> gym 5 times in 14 days; laundry 4 loads in 30 days. <strong>Abstinence examples:</strong> no smoking for 7 days; no impulse buying for 30 days. Abstinence streaks begin from an exact date and time.</div><div class="row"><button type="button" class="ghost" onclick="habitDialog.close()">Cancel</button><button id="habitSaveButton" class="primary right">Save habit</button></div></form></dialog>
@@ -102,6 +146,16 @@ const DAILY_QUEST_POOL=[
 let data=structuredClone(defaultData),currentUser=null,saveTimer=null,saveInProgress=false,saveQueued=false;
 const signedImageCache=new Map();
 const $=id=>document.getElementById(id);
+const TAB_IDS=["dashboard","tasks","habits","rewards","progress","settings"];
+function showTab(name,remember=true){
+  if(!TAB_IDS.includes(name))name="dashboard";
+  document.querySelectorAll(".tab-panel").forEach(panel=>panel.classList.toggle("active",panel.id===`tab-${name}`));
+  document.querySelectorAll(".tab-btn").forEach(btn=>{const active=btn.dataset.tab===name;btn.classList.toggle("active",active);btn.setAttribute("aria-selected",String(active))});
+  if(remember)localStorage.setItem("phdone-active-tab",name);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function restoreTab(){showTab(localStorage.getItem("phdone-active-tab")||"dashboard",false)}
+
 
 $("loginForm").addEventListener("submit",async e=>{e.preventDefault();$("loginError").textContent="";$("loginButton").disabled=true;$("loginButton").textContent="Signing in...";const{error}=await client.auth.signInWithPassword({email:$("loginEmail").value.trim(),password:$("loginPassword").value});if(error){$("loginError").textContent="The email address or password is incorrect.";console.error(error)}$("loginButton").disabled=false;$("loginButton").textContent="🔓 Sign in"});
 function appBaseUrl(){return `${window.location.origin}${window.location.pathname}`}
@@ -143,7 +197,7 @@ async function changePassword(e){
 
 async function logout(){setSyncStatus("Signing out...");const{error}=await client.auth.signOut();if(error){alert("Could not sign out.");console.error(error)}}
 function showLogin(){$("appShell").classList.add("hidden");$("loginScreen").classList.remove("hidden");$("loginPassword").value="";$("loginEmail").focus()}
-function showApp(){$("loginScreen").classList.add("hidden");$("appShell").classList.remove("hidden")}
+function showApp(){$("loginScreen").classList.add("hidden");$("appShell").classList.remove("hidden");restoreTab()}
 function setSyncStatus(m,e=false){$("syncStatus").textContent=m;$("syncStatus").style.color=e?"var(--danger)":""}
 function today(){return new Date().toLocaleDateString("en-CA")}
 function localDateTimeValue(value=new Date()){const d=value instanceof Date?value:new Date(value);const pad=n=>String(n).padStart(2,"0");return`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`}
